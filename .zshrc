@@ -38,7 +38,7 @@ ZSH_THEME="agnoster"
 # DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
+ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
 COMPLETION_WAITING_DOTS="true"
@@ -65,25 +65,29 @@ COMPLETION_WAITING_DOTS="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
+    archlinux
     adb
-    battery
+    catimg
     fzf
     git
+    golang
     colored-man-pages
     colorize
     cp
     safe-paste
+    ssh-agent
     systemd
     sudo
     urltools
     zsh-autosuggestions
     zsh-interactive-cd    
 )
+zstyle :omz:plugins:ssh-agent identities github.key
 
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
-
+zstyle :omz:plugins:ssh-agent identities github.key
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
