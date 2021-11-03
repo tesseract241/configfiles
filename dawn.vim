@@ -29,7 +29,7 @@ let g:colors_name="dawn"
 " Uncomment and complete the commands you want to change from the default.
 
 hi Normal           guifg=Thistle1      guibg=MystyRose3
-hi NormalNC         guifg=Thistle3      
+hi NormalNC         guifg=Thistle3      guibg=Grey11
 hi Cursor           guibg=Thistle3		
 hi CursorLine       guibg=Purple4
 hi Pmenu            guifg=White         guibg=DarkMagenta
@@ -41,13 +41,13 @@ hi PMenuSel         guifg=White         guibg=Magenta2
 "hi DiffDelete	    guifg=              guibg=
 "hi DiffText	    guifg=              guibg=
 hi ErrorMsg	        guifg=lightRed      guibg=MystyRose3
-hi VertSplit	    guifg=LighGreen     guibg=black
+hi VertSplit	    guifg=Grey50        guibg=black
 hi Folded		    guifg=SteelBlue     guibg=Grey11
 "hi FoldColumn	    guifg=              guibg=
 hi SignColumn       guifg=lightRed      guibg=Grey50
 "hi IncSearch	    guifg=              guibg=
 "hi LineNr		    guifg=              guibg=
-hi MatchParen       guifg=MediumPurple1 guibg=Thistle3
+hi MatchParen       guifg=Gold3         guibg=DarkOrange3
 "hi ModeMsg		    guifg=              guibg=
 "hi MoreMsg		    guifg=              guibg=
 "hi NonText		    guifg=              guibg=
