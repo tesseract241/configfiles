@@ -39,6 +39,10 @@ hi PMenuSel         guifg=White         guibg=Magenta2
 "hi DiffAdd		    guifg=              guibg=
 "hi DiffChange	    guifg=              guibg=
 "hi DiffDelete	    guifg=              guibg=
+hi diffAdded        guifg=DeepSkyBlue1
+hi diffRemoved      guifg=DarkRed
+hi diffChanged      guifg=IndianRed1
+hi diffCommon       guifg=Chartreuse4
 "hi DiffText	    guifg=              guibg=
 hi ErrorMsg	        guifg=lightRed      guibg=MystyRose3
 hi VertSplit	    guifg=Grey50        guibg=black
