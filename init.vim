@@ -41,10 +41,21 @@ set tildeop
 "Making :make call meson
 set makeprg=meson\ compile\ -C\ build
 
+"Using ugrep for searching
+if executable('ugrep')
+    set grepprg=ugrep\ -RInk\ -j\ -u\ --tabs=1\ --ignore-files
+    set grepformat=%f:%l:%c:%m,%f+%l+%c+%m,%-G%f\\\|%l\\\|%c\\\|%m
+    set runtimepath^=~/.vim/bundle/ctrlp.vim
+    let g:ctrlp_match_window='bottom,order:ttb'
+    let g:ctrlp_user_command='ugrep "" %s -Rl -I --ignore-files -3'
+
 "Using ripgrep for searching
-if executable("rg")
+elseif executable("rg")
     set grepprg=rg\ --vimgrep\ --no-heading\ --smart-case
     set grepformat=%f:%l:%c:%m,%f:%l:%m
+    set runtimepath^=~/.vim/bundle/ctrlp.vim
+    let g:ctrlp_match_window='bottom,order:ttb'
+    let g:ctrlp_user_command='rg "" %s -l --no-binary'
 endif
 
 "Vim file explorer configuration
