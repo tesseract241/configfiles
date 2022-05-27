@@ -87,6 +87,7 @@ zstyle :omz:plugins:ssh-agent identities github.key
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
+zstyle :omz:plugins:ssh-agent identities github.key
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
