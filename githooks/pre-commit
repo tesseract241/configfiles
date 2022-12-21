@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+#The blacklisted word you want to search for
+nocommit="nocommit"
+
+#Sets up the command to use to search for matches in files, only supports rg and grep
+if ({which rg}> /dev/null 2>&1); then
+    SEARCH="rg -p -H" 
+else
+    SEARCH="grep -H -n --color=always"
+fi
+
+#This sets the commit to make the git diff against, 
+#the else case covers the first commit where we don't have a HEAD
+if git rev-parse --verify HEAD >/dev/null 2>&1
+then
+	against=HEAD
+else
+	# Initial commit: diff against an empty tree object
+	against=$(git hash-object -t tree /dev/null)
+fi
+echo "Checking for nocommit in the modified files..."
+nocommit_number=0
+
+for FILE in $(git diff-index --name-only $against --); do
+    ($SEARCH $nocommit $FILE)
+    if [[ $? -eq 0 ]]; then
+        nocommit_number=1
+    fi
+done
+
+if [[ $nocommit_number -ne 0 ]]; then
+    echo "Please fix the nocommit messages before initiating a commit"
+    exit 1
+else
+    echo "No nocommit found, proceeding..."
+    exit 0
+fi
+
