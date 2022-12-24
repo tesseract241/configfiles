@@ -6,6 +6,9 @@
 	editor = nvim
 	excludesfile = ~/.gitignore
 
+[init]
+    templateDir = ~/git_template
+
 [pager]
     diff = delta
     log = delta
