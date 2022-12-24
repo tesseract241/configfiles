@@ -5,7 +5,6 @@
 [core]
 	editor = nvim
 	excludesfile = ~/.gitignore
-	hooksPath = /home/riccardo/githooks
 
 [pager]
     diff = delta
