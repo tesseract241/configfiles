@@ -1,5 +1,5 @@
 # Path to your oh-my-zsh installation.
-export ZSH="~/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -23,7 +23,7 @@ ZSH_THEME="agnoster"
 # DISABLE_AUTO_UPDATE="true"
 
 # Uncomment the following line to automatically update without prompting.
-# DISABLE_UPDATE_PROMPT="true"
+DISABLE_UPDATE_PROMPT="true"
 
 # Uncomment the following line to change how often to auto-update (in days).
 # export UPDATE_ZSH_DAYS=13
@@ -65,28 +65,42 @@ COMPLETION_WAITING_DOTS="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-    archlinux
     adb
     catimg
+    command-not-found
+    cp
+    extract
     fzf
     git
-    golang
     colored-man-pages
     colorize
-    cp
+    last-working-dir
     safe-paste
     ssh-agent
     systemd
-    sudo
     urltools
     zsh-autosuggestions
     zsh-interactive-cd    
 )
-zstyle :omz:plugins:ssh-agent identities github.key
+zstyle :omz:plugins:ssh-agent identities github.key id_ecdsa
+zstyle :omz:plugins:ssh-agent quiet yes
 
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
+export CXX=clang++
+export CXX_LD=lld
+export EDITOR=nvim
+DIRSTACKSIZE=8
+setopt autopushd pushdtohome pushdsilent
+if [[ -e $HOME/.zshdirs ]]; then
+    source ~/.zshdirs
+fi
+alias dh='dirs -v'
+alias lns='ln -s'
+alias tuxclocker=/opt/tuxclocker/bin/tuxclocker
+
+setopt correctall histignoredups 
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
