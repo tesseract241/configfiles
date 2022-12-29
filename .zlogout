@@ -1,0 +1,2 @@
+echo "dirs $(dirs)" > ~/.zshdirs
+
