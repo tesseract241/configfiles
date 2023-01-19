@@ -22,7 +22,7 @@ document tuic
 Switches to tui and focuses on the command line.
 end
 
-define threads
+define it
     info threads
 end
 document threads
