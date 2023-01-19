@@ -5,6 +5,7 @@ set history remove-duplicates unlimited
 set print pretty on
 set print array-indexes on
 set print object on
+set disassembly-flavor intel
 
 define bpl
     info breakpoints
