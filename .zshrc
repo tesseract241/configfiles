@@ -93,9 +93,6 @@ export CXX_LD=lld
 export EDITOR=nvim
 DIRSTACKSIZE=8
 setopt autopushd pushdtohome pushdsilent pushd_ignore_dups
-if [[ -e $HOME/.zshdirs ]]; then
-    source ~/.zshdirs
-fi
 alias dh='dirs -v'
 alias lns='ln -s'
 alias tuxclocker=/opt/tuxclocker/bin/tuxclocker
