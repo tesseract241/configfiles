@@ -125,3 +125,5 @@ setopt correctall histignoredups
 prompt_context() {} 
 autoload -Uz compinit
 compinit
+
+source /home/riccardo/.config/broot/launcher/bash/br

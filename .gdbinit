@@ -26,6 +26,6 @@ end
 define it
     info threads
 end
-document threads
+document it
 Print threads in target.
 end
