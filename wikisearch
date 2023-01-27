@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+if [[ $# -gt 1 ]]; then
+    query=$*
+    query=${query// /_}
+else
+    query=$1
+fi
+curl -s "https://en.wikipedia.org/w/api.php?action=opensearch&search=$query" | jq '.[1:]|.[0]|.[]' -r
