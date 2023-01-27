@@ -1,8 +1,21 @@
 #!/usr/bin/env bash
+language="en"
+if [[ $1 -eq "-l"  || $1 -eq "-lang" ]]; then
+    if [[ $# -lt 3 ]]; then
+        echo "Usage: wikisearch [-l | -language language] query"; exit -1;
+    else
+    language=$2
+    shift 2
+    fi
+fi
+query=""
 if [[ $# -gt 1 ]]; then
     query=$*
     query=${query// /_}
 else
     query=$1
+fi
+if [[ -z query ]]; then
+    echo "Usage: wikisearch [-l | -language language] query"; exit -1;
 fi
 curl -s "https://en.wikipedia.org/w/api.php?action=opensearch&search=$query" | jq '.[1:]|.[0]|.[]' -r
