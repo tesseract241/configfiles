@@ -71,15 +71,15 @@ plugins=(
     cp
     extract
     fzf
-    git
-    colored-man-pages
+    git                         #This isn't the builtin git plugin but the manually cloned https://github.com/davidde/git
     colorize
+    colored-man-pages
     last-working-dir
     safe-paste
     ssh-agent
     systemd
     urltools
-    zsh-autosuggestions
+    zsh-autosuggestions         #https://github.com/zsh-users/zsh-autosuggestions
     zsh-interactive-cd    
 )
 zstyle :omz:plugins:ssh-agent identities github.key id_ecdsa
@@ -91,6 +91,8 @@ source $ZSH/oh-my-zsh.sh
 export CXX=clang++
 export CXX_LD=lld
 export EDITOR=nvim
+export PAGER=less
+export LD_PRELOAD=/usr/lib/libmimalloc.so
 DIRSTACKSIZE=8
 setopt autopushd pushdtohome pushdsilent pushd_ignore_dups
 alias dh='dirs -v'
@@ -126,4 +128,4 @@ prompt_context() {}
 autoload -Uz compinit
 compinit
 
-source /home/riccardo/.config/broot/launcher/bash/br
+source $HOME/.config/broot/launcher/bash/br
