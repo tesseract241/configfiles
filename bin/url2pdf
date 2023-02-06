@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 if [[ $# -ne 2 ]]; then
-    echo "Usage: url2pdf url output_file"; exit 1;
+    echo -e "Usage: url2pdf \033[1murl output_file\033[0m"; exit 1;
 fi
 PDF_URL=$(curl -sL "https://api.microlink.io/?url=https://$1&pdf&mediaType=screen" | jq '.data .pdf .url' -r)
 if [[ -z $PDF_URL ]]; then

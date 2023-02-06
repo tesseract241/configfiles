@@ -2,7 +2,7 @@
 language="en"
 if [[ $1 == "-l"  || $1 == "-lang" ]]; then
     if [[ $# -lt 3 ]]; then
-        echo "Usage: wikisearch [-l | -language language] query"; exit 1;
+        echo -e "Usage: wikisearch [-l | -language \033[1mlanguage\033[0m] \033[1mquery\033[0m"; exit 1;
     else
     language=$2
     shift 2
@@ -16,6 +16,6 @@ else
     query=$1
 fi
 if [[ -z $query ]]; then
-    echo "Usage: wikisearch [-l | -language language] query"; exit 1;
+    echo -e "Usage: wikisearch [-l | -language \033[1mlanguage\033[0m] \033[1mquery\033[0m"; exit 1;
 fi
 curl -s "https://en.wikipedia.org/w/api.php?action=opensearch&search=$query" | jq '.[1:]|.[0]|.[]' -r
