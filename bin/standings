@@ -159,6 +159,10 @@ cup_ids[fi2c]="342 Finland League Cup Finland"
 cup_ids[ua1c]="442 Cup Ukraine"
 cup_ids[rsa]="491 Recopa Sudamericana International"
 
+if [[ $1 == "-h" ]]; then
+    echo -e "Usage:\n$0 \033[1mid\033[0m [\033[1mseason\033[0m]\n$0 -l"; exit 0
+fi
+
 if [[ $# == 0 || $# -gt 2 ]]; then
     echo -e "Usage:\n$0 \033[1mid\033[0m [\033[1mseason\033[0m]\n$0 -l"; exit 1
 fi

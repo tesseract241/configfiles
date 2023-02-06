@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 language="en"
+if [[ $1 == "-h" ]]; then
+        echo -e "Usage: $0 [-l | -language \033[1mlanguage\033[0m] \033[1mquery\033[0m"; exit 0
+fi
+
 if [[ $1 == "-l"  || $1 == "-lang" ]]; then
     if [[ $# -lt 3 ]]; then
-        echo -e "Usage: wiki [-l | -language \033[1mlanguage\033[0m] \033[1mquery\033[0m"; exit 1;
+        echo -e "Usage: $0 [-l | -language \033[1mlanguage\033[0m] \033[1mquery\033[0m"; exit 1;
     else
     language=$2
     shift 2
     fi
 fi
+
 query=""
 if [[ $# -gt 1 ]]; then
     query=$*
