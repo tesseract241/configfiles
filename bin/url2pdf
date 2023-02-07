@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
+basename="${0##*/}"
 if [[ $1 == "-h" ]]; then
-    echo -e "Usage: $0 \033[1murl output_file\033[0m"; exit 0
+    echo -e "Usage: $basename \033[1murl output_file\033[0m"; exit 0
 fi
 
 if [[ $# -ne 2 ]]; then
-    echo -e "Usage: $0 \033[1murl output_file\033[0m"; exit 1
+    echo -e "Usage: $basename \033[1murl output_file\033[0m"; exit 1
 fi
 
 PDF_URL=$(curl -sL "https://api.microlink.io/?url=https://$1&pdf&mediaType=screen" | jq '.data .pdf .url' -r)

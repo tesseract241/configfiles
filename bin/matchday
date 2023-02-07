@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
+basename="${0##*/}"
 if [[ $1 == "-h" ]]; then
-    echo -e "Usage: $0 [\033[1mCUTOFF\033[0m] [\033[1mDATE\033[0m]"
+    echo -e "Usage: $basename [\033[1mCUTOFF\033[0m] [\033[1mDATE\033[0m]"
     exit 0
 fi
 DATE=""
