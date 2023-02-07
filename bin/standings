@@ -196,7 +196,14 @@ id=${league_ids[$1]}
 if [[ -n $id ]]; then
     id=($id)
     id=${id[0]}
-    curl -sL "https://www.fotmob.com/api/leagues?id=$id&season=$2" | jq '.table | .[0] | .data .table .all | .[] | .name + "; " + ( .pts | tostring ) + "; " + ( .wins | tostring) + "; " + ( .draws | tostring) + "; " + ( .losses | tostring) + "; " + ( .scoresStr | tostring)' -r | column -t --separator=";" -N " ",Points,Wins,Draws,Losses,GD -R Points,Wins,Draws,Losses,GD | GREP_COLORS="mt=1;4;39:sl=1;4;39:cx=39" grep --color=always -A9999 -B9999 "Points"
+    curl -sL "https://www.fotmob.com/api/leagues?id=$id&season=$2" | jq '.table | .[0] | .data | 
+        (
+            if (.tables) then (.tables | .[] ) else . end  
+        ) 
+        | "\n" + .leagueName? , 
+        (
+            . | .table | .all | .[] | .name + "; " + ( .pts | tostring ) + "; " + ( .wins | tostring) + "; " + ( .draws | tostring) + "; " + ( .losses | tostring) + "; " + ( .scoresStr | tostring)
+        )' -r | column -L -t --separator=";" -N " ",Points,Wins,Draws,Losses,GD -R Points,Wins,Draws,Losses,GD | GREP_COLORS="mt=1;4;39:sl=1;4;39:cx=39" grep --color=always -A9999 -B9999 "Points"
 else
     id=${cup_ids[$1]}
     if [[ -n $id ]]; then
