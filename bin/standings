@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-basename="${0##*/}"
+basename=$(basename "$0")
 declare -A league_ids
 league_ids[at1]="38 Bundesliga Austria"
 league_ids[be1]="40 First Division A Belgium"
@@ -165,7 +165,7 @@ if [[ $1 == "-h" ]]; then
 fi
 
 if [[ $# == 0 || $# -gt 2 ]]; then
-    echo -e "Usage:\n\t$basename \033[1mid\033[0m [\033[1mseason\033[0m]\n\t$basename -l"; exit 1
+    echo -e "Usage:\n\t$basename \033[1mid\033[0m [\033[1mseason\033[0m]\n\t$basename -l" 1>&2; exit 1
 fi
 
 if [[ $1 == "-l" ]]; then
@@ -184,11 +184,11 @@ fi
 if [[ -n $2 ]]; then
     date="${2%%/*}"
     if ! [[ $date =~ ^[0-9]+$ ]]; then
-        echo -e "Usage:\n\t$basename \033[1mid\033[0m [\033[1mseason\033[0m]\n\t$basename -l"; exit 1
+        echo -e "Usage:\n\t$basename \033[1mid\033[0m [\033[1mseason\033[0m]\n\t$basename -l" 1>&2; exit 1
     fi
     date="$date/"$((date + 1))
     if [[ $2 != $date ]]; then
-        echo "Wrong date format, you need something like 2020/2021"; exit 1;
+        echo "Wrong date format, you need something like 2020/2021" 1>&2; exit 1;
     fi
 fi
 
@@ -234,7 +234,7 @@ curl -sL "https://www.fotmob.com/api/leagues?id=$id&season=$2" | jq -r '.playoff
         ) 
     ) '  | column --separator=";" --tree 4 --tree-parent 5 --tree-id 6 -H 5,6 -N "Match ID",Result,Time,"Aggregate Result" | GREP_COLORS="mt=1;4;39:sl=1;4;39:cx=39" grep --color=always -A9999 -B9999 "Match ID"
 else
-    echo "Could not find league $1. Use league_ids -l to list all available leagues."
+    echo "Could not find league $1. Use league_ids -l to list all available leagues." 1>&2
     exit 1
     fi
 fi
