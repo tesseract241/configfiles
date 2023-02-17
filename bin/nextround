@@ -182,10 +182,10 @@ if [[ $# -ne 1 ]]; then
 fi
 
 id=${league_ids[$1]}
-if [[ -z $id ]]; then
+if [[ -z "$id" ]]; then
     id=${cup_ids[$1]}
 fi
-if [[ -z $id ]]; then
+if [[ -z "$id" ]]; then
     echo "Could not find league $1. Use league_ids -l to list all available leagues." 1>&2
     exit 1
 fi
@@ -193,4 +193,4 @@ fi
 id=($id)
 id=${id[0]}
 
-curl -sL "https://www.fotmob.com/api/leagues?id=$id" | jq -r 'if (.matches.firstRoundWithUnplayedMatch) then .matches.firstUnplayedMatch.firstRoundWithUnplayedMatch as $nextround | .matches.allMatches[] | select(.round == $nextround) | "\(.id);\(.home.name)" + if (.status.started) then " \(.status.scoreStr) " else " - " end + "\(.away.name)" + if (.status.finished) then " FT;" else ";" end + (.status | (.utcTime | .[:19] + "Z" | fromdate | strflocaltime("%Y-%m-%d %H:%M")) + ";") else ";All matches finished;" end' | column -t -L --separator=";" -N "Match ID",Fixture,Time | GREP_COLORS="mt=1;4;39:sl=1;4;39:cx=39" grep --color=always -A9999 -B9999 "Match ID"
+curl -sL "https://www.fotmob.com/api/leagues?id=$id" | jq -r 'if (.matches.firstUnplayedMatch.firstRoundWithUnplayedMatch) then (.matches.firstUnplayedMatch.firstRoundWithUnplayedMatch as $nextround | .matches.allMatches[] | select(.round == $nextround) | "\(.id);\(.home.name)" + if (.status.started) then " \(.status.scoreStr) " else " - " end + "\(.away.name)" + if (.status.finished) then " FT;" else ";" end + (.status | (.utcTime | .[:19] + "Z" | fromdate | strflocaltime("%Y-%m-%d %H:%M")) + ";")) else ";All matches finished;" end' | column -t -L --separator=";" -N "Match ID",Fixture,Time | GREP_COLORS="mt=1;4;39:sl=1;4;39:cx=39" grep --color=always -A9999 -B9999 "Match ID"
