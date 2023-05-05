@@ -29,3 +29,18 @@ end
 document it
 Print threads in target.
 end
+
+define rem
+    if $argc==0
+        target remote localhost:2022
+    end
+    if $argc==1
+        target remote localhost:$arg0
+    end
+    if $argc==2
+        target remote $arg0:$arg1
+    end
+end
+document rem
+Connect to gdbserver on localhost:2022 if given no arguments, localhost:arg0 if given 1 argument, arg0:arg1 if given 2 arguments
+end
