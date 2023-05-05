@@ -38,7 +38,7 @@ DISABLE_UPDATE_PROMPT="true"
 # DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
-ENABLE_CORRECTION="true"
+#ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
 COMPLETION_WAITING_DOTS="true"
@@ -65,20 +65,13 @@ COMPLETION_WAITING_DOTS="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-    adb
     catimg
-    command-not-found
-    cp
     extract
     fzf
-    git                         #This isn't the builtin git plugin but the manually cloned https://github.com/davidde/git
-    colorize
     colored-man-pages
     last-working-dir
     safe-paste
     ssh-agent
-    systemd
-    urltools
     zsh-autosuggestions         #https://github.com/zsh-users/zsh-autosuggestions
     zsh-interactive-cd    
 )
@@ -95,11 +88,8 @@ export PAGER=less
 export LD_PRELOAD=/usr/lib/libmimalloc.so
 DIRSTACKSIZE=8
 setopt autopushd pushdtohome pushdsilent pushd_ignore_dups
-alias dh='dirs -v'
-alias lns='ln -s'
-alias tuxclocker=/opt/tuxclocker/bin/tuxclocker
 
-setopt correctall histignoredups 
+setopt histignoredups printexitvalue
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
@@ -128,4 +118,7 @@ prompt_context() {}
 autoload -Uz compinit
 compinit
 
+source /usr/share/doc/pkgfile/command-not-found.zsh
+source $HOME/.aliases
 source $HOME/.config/broot/launcher/bash/br
+
