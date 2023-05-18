@@ -39,7 +39,7 @@ bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOU
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+t exec xfce4-terminal
+bindsym $mod+t exec alacritty
 
 # kill focused window
 bindsym $mod+q kill
@@ -191,7 +191,7 @@ bindsym Print           exec --no-startup-id flameshot
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-    status_command i3status --config ~/.config/i3/i3status.conf
+    status_command i3status --config ~/.i3/i3status.conf
     font pango: Source Code Variable 8
     colors {
         background #282A36
