@@ -1,5 +1,7 @@
 alias dh='dirs -v'
 alias lns='ln -s'
+alias today='bok new'
+alias yesterday='bok edit yesterday'
 alias g=git
 alias ga='git add'
 alias gaa='git add --all'
