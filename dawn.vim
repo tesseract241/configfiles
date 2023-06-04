@@ -76,6 +76,7 @@ hi Visual		    guibg=DeepPink4
 hi Comment          guifg=Grey50        guibg=MystyRose3
 hi Constant	        guifg=Orange4       gui=Italic
 hi Identifier       guifg=Thistle1      guibg=MystyRose3
+hi Function         gui=bold    guifg=#80a0ff
 hi Statement	    gui=bold    guifg=Gold1
 hi PreProc          guifg=IndianRed1	
 hi Type		        guifg=Chartreuse3 gui=bold
