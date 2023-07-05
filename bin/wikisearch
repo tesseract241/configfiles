@@ -17,7 +17,7 @@ fi
 query=""
 if [[ $# -gt 1 ]]; then
     query=$*
-    query=${query// /_}
+    query=${query// /%20}
 else
     query=$1
 fi
