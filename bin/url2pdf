@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-basename=$(basename "$0)"
+basename=$(basename $0)
 if [[ $1 == "-h" ]]; then
     echo -e "Usage: $basename \033[1murl output_file\033[0m"; exit 0
 fi
