@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+basename=$(basename $0)
+if [[ $# -ne 1 ]]; then
+    echo -e "Usage: $basename Username\n"
+    exit -1
+fi
+
+#If the data is not yet available, twitch returns us some javascript that will load it once ready, so we loop until the reply contains the actual data
+reply=$(curl -sL "https://www.twitch.tv/$1/videos")
+until echo "$reply" | grep -q -F ld+json; do
+#No need to spam, as we need the data to reach the server and we might even get blackballed if we do
+    sleep .5
+    reply=$(curl -sL "https://www.twitch.tv/$1/videos") 
+done
+echo $reply | awk '{{sub(/.*json">/, ""); sub(/<\/script>.*/, "")}; print}' | jq -j '.[] | if (."@type" == "ItemList") then (.itemListElement[] | if (.url | test("https://www.twitch.tv/videos*")) then .name + "\n" + .uploadDate + "\n" + .url + "\n\n"  else "" end) else "" end'
