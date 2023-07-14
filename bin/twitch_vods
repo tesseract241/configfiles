@@ -12,4 +12,4 @@ until echo "$reply" | grep -q -F ld+json; do
     sleep .5
     reply=$(curl -sL "https://www.twitch.tv/$1/videos") 
 done
-echo $reply | awk '{{sub(/.*json">/, ""); sub(/<\/script>.*/, "")}; print}' | jq -j '.[] | if (."@type" == "ItemList") then (.itemListElement[] | if (.url | test("https://www.twitch.tv/videos*")) then .name + "\n" + (.uploadDate | fromdate | strflocaltime("%Y-%m-%d %H:%M"))+ "\n" + .url + "\n\n"  else "" end) else "" end'
+echo $reply | awk '{{sub(/.*json">/, ""); sub(/<\/script>.*/, "")}; print}' | jq -j '.[] | if (."@type" == "ItemList") then (.itemListElement[] | if (.url | test("https://www.twitch.tv/videos*")) then .name + "\n" + (((.duration[2:-1] | tonumber) as $duration | ( $duration / 3600 | floor | tostring) + "H " + (($duration % 3600) / 60 | floor | tostring) + "m " + ($duration % 60 | tostring) + "s\n")) + .uploadDate + "\n" + .url + "\n\n"  else "" end) else "" end'
