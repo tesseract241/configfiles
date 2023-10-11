@@ -1,5 +1,6 @@
 set debuginfod enabled on
 set disassemble-next-line auto
+add-auto-load-safe-path /
 set history save on
 set history remove-duplicates unlimited
 set print pretty on
