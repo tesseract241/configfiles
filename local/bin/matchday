@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+basename=$(basename "$0")
+if [[ $1 == "-h" ]]; then
+    echo -e "Usage: $basename [\033[1mCUTOFF\033[0m] [\033[1mDATE\033[0m]" 
+    exit 0
+fi
+DATE=""
+if [[ -n $2 ]]; then
+    DATE=$(date --date="$2" +%+4Y%m%d)
+fi
+CUTOFF=${1:-100}
+curl -sL "https://www.fotmob.com/api/matches?date=$DATE" | jq -r --arg CUTOFF $CUTOFF '
+.leagues | .[] | if ( .primaryId < ( $CUTOFF| tonumber)) then ( "\n" + .ccode + " " + .name , (.matches | .[] | ( .id | tostring ) + ";" + (.home | .name + " " + (.score| tostring) ) + "-" + ( .away | ( .score | tostring) + " " + .name ) + if (.status | .finished) then " FT" else "" end + ";" + (.status | (.utcTime | .[:19] + "Z" | fromdate | strflocaltime("%Y-%m-%d %H:%M")) + ";"))) else empty end' | column -t -L --separator=";" -N "Match ID",Result,Time | GREP_COLORS="mt=1;4;39:sl=1;4;39:cx=39" grep --color=always -A9999 -B9999 "Match ID"
+

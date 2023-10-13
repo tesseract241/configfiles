@@ -1,0 +1,1 @@
+curl "v2.wttr.in/$(curl -s ipinfo.io | jq ' .city +","+ .country ' -r)?Fp"   

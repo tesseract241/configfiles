@@ -1,0 +1,11 @@
+[Unit]
+Description=Nvidia GPU Overclock
+After=nv-power-limit.service plasma-kwin_x11.service
+ConditionPathExists=/usr/bin/nvidia-settings
+
+[Service]
+Environment="PATH=/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin\nDISPLAY=0:"
+ExecStart=/usr/local/bin/nv-overclock.sh
+
+[Install]
+WantedBy=plasma-core.target
