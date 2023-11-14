@@ -11,4 +11,4 @@ if [ $# -gt 1 ]; then
 else
     query=$1
 fi
-LESSOPEN="||/home/tesseract/Coding/github_test/gitless %s" less "$query-1" "$query-2" "$query-3" "$query-4" "$query-5"
+LESSOPEN="||gitless %s" less "$query-1" "$query-2" "$query-3" "$query-4" "$query-5"
