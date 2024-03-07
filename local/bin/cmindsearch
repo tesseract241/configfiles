@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+basename=$(basename "$0")
+if [[ $1 == "-h" ]]; then
+    echo -e "Usage: $basename \033[1mquery\033[0m"; exit 0;
+fi
+
+query=""
+if [[ $# -gt 1 ]]; then
+    query=$*
+    query=${query// /%20}
+else
+    query=$1
+fi
+if [[ -z $query ]]; then
+    echo -e "Usage: $basename \033[1mquery\033[0m" 1>&2; exit 1;
+fi
+curl -sL "https://www.coppermind.net/w/api.php?action=opensearch&search=$query" | jq '.[1:]|.[0]|.[]' -r
