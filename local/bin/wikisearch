@@ -24,4 +24,5 @@ fi
 if [[ -z $query ]]; then
     echo -e "Usage: $basename [-l | -language \033[1mlanguage\033[0m] \033[1mquery\033[0m" 1>&2; exit 1;
 fi
-curl -s "https://en.wikipedia.org/w/api.php?action=opensearch&search=$query" | jq '.[1:]|.[0]|.[]' -r
+curl -s "https://$language.wikipedia.org/w/api.php?action=opensearch&search=$query" | jq '.[1:]|.[0]|.[]' -r
+
