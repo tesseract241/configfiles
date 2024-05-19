@@ -186,7 +186,7 @@ if [[ -z "$id" ]]; then
     id=${cup_ids[$1]}
 fi
 if [[ -z "$id" ]]; then
-    echo "Could not find league $1. Use league_ids -l to list all available leagues." 1>&2
+    echo "Could not find league $1. Use $basename -l to list all available leagues." 1>&2
     exit 1
 fi
 

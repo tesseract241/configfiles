@@ -234,7 +234,7 @@ curl -sL "https://www.fotmob.com/api/leagues?id=$id&season=$2" | jq -r '.playoff
         ) 
     ) '  | column --separator=";" --tree 4 --tree-parent 5 --tree-id 6 -H 5,6 -N "Match ID",Result,Time,"Aggregate Result" | GREP_COLORS="mt=1;4;39:sl=1;4;39:cx=39" grep --color=always -A9999 -B9999 "Match ID"
 else
-    echo "Could not find league $1. Use league_ids -l to list all available leagues." 1>&2
+    echo "Could not find league $1. Use $basename -l to list all available leagues." 1>&2
     exit 1
     fi
 fi
