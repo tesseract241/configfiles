@@ -1,5 +1,20 @@
 #!/usr/bin/env bash
 
+#We don't set -u because we depend on arrays[undeclared_key] to return an empty string (there is no way to test if a key exists that I can see)
+set -e -o pipefail 
+
+basename=$(basename "$0")
+
+if ! command -v jq > /dev/null 2>&1; then
+    echo "$basename needs jq to function, please install it and make sure it's in PATH"
+    exit 1
+fi
+
+if ! command -v jq > /dev/null 2>&1; then
+    echo "$basename needs fotsearch to function, please install it and make sure it's in PATH"
+    exit 1
+fi
+
 declare -A league_ids
 league_ids[at1]="38 Bundesliga Austria"
 league_ids[be1]="40 First Division A Belgium"
@@ -159,9 +174,12 @@ cup_ids[cy1c]="330 Cup Cyprus"
 cup_ids[fi2c]="342 Finland League Cup Finland"
 cup_ids[ua1c]="442 Cup Ukraine"
 cup_ids[rsa]="491 Recopa Sudamericana International"
+cup_ids[eu3]="10216 Europa Conference League"
+
 basename=$(basename "$0")
+
 if [[ $1 == "-h" ]]; then
-    echo -e "Usage: \n\t$basename \033[1mleague_id\033[0m]\n\t$basename -l"
+    echo -e "Usage: \n\t$basename \033[1mleague name\033[0m\n\t$basename -l"
     exit 0
 fi
 if [[ $1 == "-l" ]]; then
@@ -176,18 +194,17 @@ if [[ $1 == "-l" ]]; then
     done
     exit 0
 fi
-if [[ $# -ne 1 ]]; then
-    echo -e "Usage: $basename [\033[1mleague_id\033[0m]" 1>&2
-    exit 1
-fi
 
 id=${league_ids[$1]}
 if [[ -z "$id" ]]; then
     id=${cup_ids[$1]}
 fi
 if [[ -z "$id" ]]; then
-    echo "Could not find league $1. Use league_ids -l to list all available leagues." 1>&2
-    exit 1
+    id=$(fotsearch "$*" | jq -r 'if .leagueSuggest then .leagueSuggest[0].options[0].payload.id else "" end')
+    if [[ -z "$id" ]]; then
+        echo "Could not find league $*. Use $basename -l to list all available leagues." 1>&2
+        exit 1
+    fi
 fi
 
 id=($id)

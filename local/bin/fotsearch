@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -eu -o pipefail
+
+basename=$(basename $0)
+if [[ $# -eq 0 ]]; then
+    echo -e "Usage: \n\t$basename \033[1mquery\033[0m\n" 1>&2
+    exit 1
+fi
+
+if [[ $1 == "-h" ]]; then
+    echo -e "Usage: \n\t$basename \033[1mquery\033[0m\n"
+    exit 0
+fi
+
+query=$1
+if [[ $# -gt 1 ]]; then
+    query="$*"
+fi
+
+curl -sL --url-query term="$query" "https://apigw.fotmob.com/searchapi/suggest?"
