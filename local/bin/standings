@@ -1,5 +1,20 @@
 #!/usr/bin/env bash
+
+#We don't set -u because we depend on arrays[undeclared_key] to return an empty string (there is no way to test if a key exists that I can see)
+set -e -o pipefail 
+
 basename=$(basename "$0")
+
+if ! command -v jq > /dev/null 2>&1; then
+    echo "$basename needs jq to function, please install it and make sure it's in PATH"
+    exit 1
+fi
+
+if ! command -v jq > /dev/null 2>&1; then
+    echo "$basename needs fotsearch to function, please install it and make sure it's in PATH"
+    exit 1
+fi
+
 declare -A league_ids
 league_ids[at1]="38 Bundesliga Austria"
 league_ids[be1]="40 First Division A Belgium"
@@ -103,122 +118,132 @@ league_ids[ru2]="338 1. Division Russia"
 league_ids[ve1]="339 Primera Division Venezuela"
 league_ids[ua1]="441 Premier League Ukraine"
 
-declare -A cup_ids
-cup_ids[eu1]="42 Champions League International"
-cup_ids[ca]="44 Copa America International"
-cup_ids[sa1]="45 Copa Libertadores International"
-cup_ids[eu]="50 EURO International"
-cup_ids[eu2]="73 Europa League International"
-cup_ids[wc]="77 World Cup International"
-cup_ids[en1c]="132 FA Cup England"
-cup_ids[en2c]="133 EFL Cup England"
-cup_ids[fr1c]="134 Coupe de France France"
-cup_ids[sc1c]="137 Scottish Cup Scotland"
-cup_ids[es1c]="138 Copa del Rey Spain"
-cup_ids[it1c]="141 Coppa Italia Italy"
-cup_ids[en3c]="142 EFL Trophy England"
-cup_ids[fi1c]="143 Cup Finland"
-cup_ids[gr1c]="145 Greece Cup Greece"
-cup_ids[be1c]="149 Cup Belgium"
-cup_ids[tr1c]="151 Turkish Cup Türkiye"
-cup_ids[wl1c]="160 Wales Cup 1 "
-cup_ids[ch1c]="164 Cup Switzerland"
-cup_ids[se1c]="171 Cup Sweden"
-cup_ids[si1c]="174 Cup Slovenia"
-cup_ids[sk1c]="177 FA Cup Slovakia"
-cup_ids[sc3c]="179 Challenge Cup Scotland"
-cup_ids[sc2c]="180 League Cup Scotland"
-cup_ids[rs1c]="183 Cup Serbia"
-cup_ids[pt1c]="186 Cup Portugal"
-cup_ids[pt2c]="187 League Cup Portugal"
-cup_ids[ro1c]="190 Cup Romania"
-cup_ids[ru1c]="193 Cup Russia"
-cup_ids[pl1c]="198 FA Cup Poland"
-cup_ids[no1c]="206 Cup Norway"
-cup_ids[de1c]="209 DFB Pokal Germany"
-cup_ids[hu1c]="213 FA Cup Hungary"
-cup_ids[hu2c]="214 Hungary Cup 2 "
-cup_ids[ie1c]="219 FAI Cup Ireland"
-cup_ids[ie2c]="220 League Cup "
-cup_ids[jp1c]="224 League Cup Japan"
-cup_ids[nl1c]="235 KNVB Cup Netherlands"
-cup_ids[dk1c]="242 DBU Pokalen Denmark"
-cup_ids[hr1c]="275 FA Cup Croatia"
-cup_ids[at1c]="278 Cup Austria"
-cup_ids[eu19]="287 EURO U19 International"
-cup_ids[eu21]="288 EURO U21 Qualification International"
-cup_ids[wc20]="296 World Cup U20 International"
-cup_ids[bg1c]="271 Cup Bulgaria"
-cup_ids[na1]="297 CONCACAF Champions League International"
-cup_ids[na]="298 CONCACAF Gold Cup International"
-cup_ids[sa2]="299 Copa Sudamericana International"
-cup_ids[ea]="300 East Asian Championship International"
-cup_ids[ue17]="301 European Championship U-17 International"
-cup_ids[wc17]="306 World Cup U17 International"
-cup_ids[cy1c]="330 Cup Cyprus"
-cup_ids[fi2c]="342 Finland League Cup Finland"
-cup_ids[ua1c]="442 Cup Ukraine"
-cup_ids[rsa]="491 Recopa Sudamericana International"
+league_ids[eu1]="42 Champions League International"
+league_ids[ca]="44 Copa America International"
+league_ids[sa1]="45 Copa Libertadores International"
+league_ids[eu]="50 EURO International"
+league_ids[eu2]="73 Europa League International"
+league_ids[wc]="77 World Cup International"
+league_ids[en1c]="132 FA Cup England"
+league_ids[en2c]="133 EFL Cup England"
+league_ids[fr1c]="134 Coupe de France France"
+league_ids[sc1c]="137 Scottish Cup Scotland"
+league_ids[es1c]="138 Copa del Rey Spain"
+league_ids[it1c]="141 Coppa Italia Italy"
+league_ids[en3c]="142 EFL Trophy England"
+league_ids[fi1c]="143 Cup Finland"
+league_ids[gr1c]="145 Greece Cup Greece"
+league_ids[be1c]="149 Cup Belgium"
+league_ids[tr1c]="151 Turkish Cup Türkiye"
+league_ids[wl1c]="160 Wales Cup 1 "
+league_ids[ch1c]="164 Cup Switzerland"
+league_ids[se1c]="171 Cup Sweden"
+league_ids[si1c]="174 Cup Slovenia"
+league_ids[sk1c]="177 FA Cup Slovakia"
+league_ids[sc3c]="179 Challenge Cup Scotland"
+league_ids[sc2c]="180 League Cup Scotland"
+league_ids[rs1c]="183 Cup Serbia"
+league_ids[pt1c]="186 Cup Portugal"
+league_ids[pt2c]="187 League Cup Portugal"
+league_ids[ro1c]="190 Cup Romania"
+league_ids[ru1c]="193 Cup Russia"
+league_ids[pl1c]="198 FA Cup Poland"
+league_ids[no1c]="206 Cup Norway"
+league_ids[de1c]="209 DFB Pokal Germany"
+league_ids[hu1c]="213 FA Cup Hungary"
+league_ids[hu2c]="214 Hungary Cup 2 "
+league_ids[ie1c]="219 FAI Cup Ireland"
+league_ids[ie2c]="220 League Cup "
+league_ids[jp1c]="224 League Cup Japan"
+league_ids[nl1c]="235 KNVB Cup Netherlands"
+league_ids[dk1c]="242 DBU Pokalen Denmark"
+league_ids[hr1c]="275 FA Cup Croatia"
+league_ids[at1c]="278 Cup Austria"
+league_ids[eu19]="287 EURO U19 International"
+league_ids[eu21]="288 EURO U21 Qualification International"
+league_ids[wc20]="296 World Cup U20 International"
+league_ids[bg1c]="271 Cup Bulgaria"
+league_ids[na1]="297 CONCACAF Champions League International"
+league_ids[na]="298 CONCACAF Gold Cup International"
+league_ids[sa2]="299 Copa Sudamericana International"
+league_ids[ea]="300 East Asian Championship International"
+league_ids[ue17]="301 European Championship U-17 International"
+league_ids[wc17]="306 World Cup U17 International"
+league_ids[cy1c]="330 Cup Cyprus"
+league_ids[fi2c]="342 Finland League Cup Finland"
+league_ids[ua1c]="442 Cup Ukraine"
+league_ids[rsa]="491 Recopa Sudamericana International"
+league_ids[eu3]="10216 Europa Conference League"
+
 
 if [[ $1 == "-h" ]]; then
-    echo -e "Usage:\n\t$basename \033[1mid\033[0m [\033[1mseason\033[0m]\n\t$basename -l"; exit 0
+    echo -e "Usage:\n\t$basename \033[1mleague name\033[0m [\033[1mseason\033[0m]\n\t$basename -l"; exit 0
 fi
 
-if [[ $# == 0 || $# -gt 2 ]]; then
-    echo -e "Usage:\n\t$basename \033[1mid\033[0m [\033[1mseason\033[0m]\n\t$basename -l" 1>&2; exit 1
+if [[ $# == 0 ]]; then
+    echo -e "Usage:\n\t$basename \033[1mleague name\033[0m [\033[1mseason\033[0m]\n\t$basename -l" 1>&2; exit 1
 fi
 
 if [[ $1 == "-l" ]]; then
     shopt -s extglob
     echo "These are the ids for leagues:"
     for key in "${!league_ids[@]}"; do
-        echo "$key stands for ${league_ids[$key]}"
-    done
-    echo -e "\nThese are the ids for cups:"
-    for key in "${!cup_ids[@]}"; do
-        echo "$key stands for ${cup_ids[$key]##+([0-9 ])}"
+        echo "$key stands for ${league_ids[$key]##+([0-9 ])}"
     done
     exit 0
 fi
 
-if [[ -n $2 ]]; then
-    date="${2%%/*}"
-    if ! [[ $date =~ ^[0-9]+$ ]]; then
-        echo -e "Usage:\n\t$basename \033[1mid\033[0m [\033[1mseason\033[0m]\n\t$basename -l" 1>&2; exit 1
-    fi
-    date="$date/"$((date + 1))
-    if [[ $2 != $date ]]; then
-        echo "Wrong date format, you need something like 2020/2021" 1>&2; exit 1;
-    fi
+#Check if the user only gave us a single year to determine the season
+if [[ "${@: -1}" =~ [0-9][0-9][0-9][0-9] && ! "${@: -1}" =~ [0-9][0-9][0-9][0-9]/[0-9][0-9][0-9][0-9] ]]; then
+    echo "Wrong season format, you need something like 2020/2021, you gave ${@: -1}" 1>&2 
+    exit 1
 fi
 
-id=${league_ids[$1]}
+#Extract a season if it's there, checking if the user gave us one with non contiguous years
+league="$1"
+if [[ "${@: -1}" =~ [0-9][0-9][0-9][0-9]/[0-9][0-9][0-9][0-9] ]]; then
+    season="${@: -1}"
+    season="${season%%/*}"
+    season="$season/"$((season + 1))
+    if [[ "${@: -1}" != $season ]]; then
+        echo "Wrong season format, you need something like 2020/2021" 1>&2 
+        exit 1
+    fi
+    count=$(( "$#" - 1 ))
+    league="${@:1:$count}"
+fi
+
+id="${league_ids[$1]}"
 if [[ -n $id ]]; then
     id=($id)
     id=${id[0]}
-    curl -sL "https://www.fotmob.com/api/leagues?id=$id&season=$2" | jq '.table | .[0] | .data | 
-        (
-            if (.tables) then (.tables | .[] ) else . end  
-        ) 
-        | "\n" + .leagueName? , 
-        (
-            . | .table | .all | .[] | .name + "; " + ( .pts | tostring ) + "; " + ( .wins | tostring) + "; " + ( .draws | tostring) + "; " + ( .losses | tostring) + "; " + ( .scoresStr | tostring)
-        )' -r | column -L -t --separator=";" -N " ",Points,Wins,Draws,Losses,GD -R Points,Wins,Draws,Losses,GD | GREP_COLORS="mt=1;4;39:sl=1;4;39:cx=39" grep --color=always -A9999 -B9999 "Points"
 else
-    id=${cup_ids[$1]}
-    if [[ -n $id ]]; then
-        id=($id)
-        id=${id[0]}
-        curl -sL "https://www.fotmob.com/api/leagues?id=$id&season=$2" | jq '.table | .[] | .data .tables | .[] | .table .all | (.[] | .name + "; " + ( .pts | tostring ) + "; " + ( .wins | tostring) + "; " + ( .draws | tostring) + "; " + ( .losses | tostring) + "; " + ( .scoresStr | tostring)), "\n"' -r | column -L -t --separator=";" -N " ",Points,Wins,Draws,Losses,GD -R Points,Wins,Draws,Losses,GD | GREP_COLORS="mt=1;4;39:sl=1;4;39:cx=39" grep --color=always -A9999 -B9999 Points 
-curl -sL "https://www.fotmob.com/api/leagues?id=$id&season=$2" | jq -r '.playoff | .rounds | .[] | 
+    id=$(fotsearch "$league" | jq -r 'if .leagueSuggest then .leagueSuggest[0].options[0].payload.id else "" end')
+    if [[ -z "$id" ]]; then
+        echo "Could not find league $league. Use $basename -l to list all available leagues." 1>&2
+        exit 1
+    fi
+fi
+
+json=$(curl -sL "https://www.fotmob.com/api/leagues?id=$id&season=$season")
+
+if [[ $(jq -r '.playoff | length' <<< "$json") -gt 0 ]]; then
+    jq '.table | .[] | .data .tables | .[] | .table .all | 
+        (.[] | .name + "; " +
+        ( .pts | tostring ) + "; " + 
+        ( .wins | tostring) + "; " + 
+        ( .draws | tostring) + "; " + 
+        ( .losses | tostring) + "; " + 
+        ( .scoresStr | tostring)), "\n"' -r <<< "$json" | column -L -t --separator=";" -N " ",Points,Wins,Draws,Losses,GD -R Points,Wins,Draws,Losses,GD | GREP_COLORS="mt=1;4;39:sl=1;4;39:cx=39" grep --color=always -A9999 -B9999 Points 
+    jq -r '.playoff | .rounds | .[] | 
     ( 
         .matchups | 
         (
         .[] |
             (
-                    .matches | .[] | ( (.matchId | tostring) + ";" + (.home | .shortName + " " + (.score | tostring)) + "-" + (.away | (.score | tostring) + " " +.shortName) + ";" + (.status .utcTime | .[:19] + "Z" | fromdate | strflocaltime("%Y-%m-%d %H:%M")) + ";")
+                .matches | .[] | ( (.matchId | tostring) + ";" + (.home | .shortName + " " + if .score then (.score | tostring) else "0" end) + "-" + (.away | if .score then (.score | tostring) else "0" end + " " +.shortName) + ";" + (.status .utcTime | .[:19] + "Z" | fromdate | strflocaltime("%Y-%m-%d %H:%M")) + ";")
             ) +
-            .homeTeam + " " + (.aggregatedResult | .homeScore | tostring ) +  "-" + (.aggregatedResult | .awayScore | tostring ) + " " + .awayTeam + ";" +
+            .homeTeam + " " + if .aggregatedResult | length > 0 then ((.aggregatedResult | .homeScore | tostring ) +  "-" + (.aggregatedResult | .awayScore | tostring ) + " ") else "" end + .awayTeam + ";" +
             ( 
                 (.drawOrder + .drawOrder%2)/2 | tostring
             ) + 
@@ -232,9 +257,19 @@ curl -sL "https://www.fotmob.com/api/leagues?id=$id&season=$2" | jq -r '.playoff
             .stage | .[2:] | try (tonumber*2)  catch 2 | tostring
             )
         ) 
-    ) '  | column --separator=";" --tree 4 --tree-parent 5 --tree-id 6 -H 5,6 -N "Match ID",Result,Time,"Aggregate Result" | GREP_COLORS="mt=1;4;39:sl=1;4;39:cx=39" grep --color=always -A9999 -B9999 "Match ID"
+    ) '  <<< "$json" | column --separator=";" --tree 4 --tree-parent 5 --tree-id 6 -H 5,6 -N "Match ID",Result,Time,"Aggregate Result" | GREP_COLORS="mt=1;4;39:sl=1;4;39:cx=39" grep --color=always -A9999 -B9999 "Match ID"
 else
-    echo "Could not find league $1. Use league_ids -l to list all available leagues." 1>&2
-    exit 1
-    fi
+    jq '.table | .[0] | .data | 
+        (
+            if (.tables) then (.tables | .[] ) else . end  
+        ) 
+        | "\n" + .leagueName? , 
+        (
+            .table | .all | .[] | .name + "; " + 
+            ( .pts | tostring ) + "; " + 
+            ( .wins | tostring) + "; " + 
+            ( .draws | tostring) + "; " + 
+            ( .losses | tostring) + "; " + 
+            ( .scoresStr | tostring)
+        )' -r <<< "$json" | column -L -t --separator=";" -N " ",Points,Wins,Draws,Losses,GD -R Points,Wins,Draws,Losses,GD | GREP_COLORS="mt=1;4;39:sl=1;4;39:cx=39" grep --color=always -A9999 -B9999 "Points"
 fi
