@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+set -eu -o pipefail
+
+basename=$(basename $0)
+if [[ $# -eq 0 ]]; then
+    echo -e "Usage: \n\t$basename \033[1mmatch id\033[0m" 1>&2
+    exit 1
+fi
+
+if [[ $1 == "-h" ]]; then
+    echo -e "Usage: \n\t$basename \033[1mmatch id\033[0m"
+    exit 0
+fi
+
+if ! command -v jq > /dev/null 2>&1; then
+    echo "$basename needs jq to function, please install it and make sure it's in PATH"
+    exit 1
+fi
+
+temp_text=$(curl -sL "https://www.fotmob.com/api/matchDetails?matchId=$1")
+
+#Intro text
+jq -j ' 
+    (
+        .general .leagueName + " " + .leagueRoundName + " " + .parentLeagueSeason
+    ) ,
+    ( 
+        .header | ("\nStarting time: " + (.status .utcTime | .[:19] + "Z" | fromdate | strflocaltime("%Y-%m-%d %H:%M") + "\n"))
+    ) ,
+    ( 
+        .content .matchFacts | (
+            .infoBox | (.Stadium | "Match taking place at the \(.name), in \(.city), \(.country)\n") + (.Referee | "Refereed by \(.text) from \(.country)\n") +
+            if (.Attendance) then "\(.Attendance) people present\n" else "\n" end + "\n"
+        )
+    )' <<<"$temp_text"
+
+max_length=$(jq -j '[.content.lineup.lineup[] | .players[] | length] | max' <<<"$temp_text")
+
+#Lineups
+#Notice how we get the max length among the players names to be able to pad them correctly for centering
+#column takes care of the rest of the formatting, based on where we put the ; (we add empty fields to make lineups with Units that have different parities fit together pleasantly, so a 4-5-1 lineup will have 9 fields)
+lineups=$(jq -j '  
+([.content.lineup.lineup[] | .players[] | length] | max) as $max_length | (
+        .content.lineup | 
+            .lineup[] | 
+            (
+                .players | .[] | (length) as $length |
+                if $max_length !=$length then ";" * ($max_length - $length) else "" end,
+                (.[] |  
+                    if (.stats[0].stats | has("Goals")) then if .stats[0].stats.Goals.stat.value!=0 then "\\033[1m" else "" end else "" end +
+                (if .timeSubbedOff then "\\033[4m" else "" end) + 
+                    .name.lastName + "\\033[0m;;") ,
+                "\n\n\n"
+            ),
+        "\n"
+    ),
+    (
+    [.content.lineup.lineup[0].bench, .content.lineup.lineup[1].bench] | transpose | .[] | 
+        (.[] |
+            if . then 
+            (
+                if .stats | length > 0 then if .stats[0].stats.Goals.stat.value!=0 then "\\033[1m" else "" end else "" end +
+                (if .timeSubbedOff then "\\033[4m" else "" end) + 
+                (.name.lastName) + 
+                (if .timeSubbedOn then ";" + (.timeSubbedOn | tostring) else ";" end) + 
+                (if .timeSubbedOff then " " + (.timeSubbedOff | tostring) else "" end) + 
+                "\\033[0m" 
+            ) 
+            else ";" end + 
+            if $max_length!=4 then ";" * (2 * $max_length - 3) else "" end
+        ) , "\n"
+    )
+    ' <<<"$temp_text")
+printf "$lineups\n\n" | column -L -t --separator=';'
+
+#Match events
+#Notice the $reversed field, as fotmob switches the order of events from LIFO to FIFO when the match ends
+match_details=$(jq -j '
+    (.general.finished | not) as $reversed  |
+    (    
+        .header |(.teams | (.[0] | .name + ";" + (.score | tostring)) + "-" + (.[1] | (.score | tostring) + ";" + .name) + "\n\n")
+    ), 
+    (
+        .content.matchFacts.events.events | if (length) then 
+        (
+            if $reversed then reverse | .[] |
+            (    
+                (if (.isHome==false) then ";" + (.timeStr | tostring) + ";" elif (.isHome==null) then ";" + (.timeStr | tostring) else "" end) + 
+                if (.type == "Goal") then "\\033[1m\(.player | .name) scored" + (if .goalDescription then " a \(.goalDescription)" else "" end + if(.assistStr) then ", \(.assistStr)" else "" end + "\\033[0m")
+                elif (.type == "Card") then "\(.player .name) got a \(.card) card" 
+                elif (.type == "AddedTime") then " \(.minutesAddedStr | .[2:3])ET"
+                elif (.type == "Substitution") then "\(.swap | .[0] | .name) comes in for \( .swap | .[1] | .name)" + if (.injuredPlayerOut) then " due to an injury" else "" end
+                elif (.type == "Half") then " " + .halfStrShort else "" end
+                + 
+                (if (.isHome==true) then ";" + (.timeStr | tostring) + "\n" else "\n" end)
+            ) else .[] | 
+            (
+                (if (.isHome==false) then ";" + (.timeStr | tostring) + ";" elif (.isHome==null) then ";" + (.timeStr | tostring) else "" end) + 
+                if (.type == "Goal") then "\\033[1m\(.player | .name) scored" + (if .goalDescription then " a \(.goalDescription)" else "" end + if(.assistStr) then ", \(.assistStr)" else "" end + "\\033[0m")
+                elif (.type == "Card") then "\(.player .name) got a \(.card) card" 
+                elif (.type == "AddedTime") then " \(.minutesAddedStr | .[2:3])ET"
+                elif (.type == "Substitution") then "\(.swap | .[0] | .name) comes in for \( .swap | .[1] | .name)"
+                elif (.type == "Half") then " " + .halfStrShort else "" end
+                + 
+                (if (.isHome==true) then ";" + (.timeStr | tostring) + "\n" else "\n" end)
+            ) end
+    ) else null end 
+    )' <<<"$temp_text")
+
+#We use printf instead of using the jq output directly because we embedded terminal colour codes (\033[XXXm) that printf will have to interpret for us. In this case, it's printing goals in bold
+#Column pretty prints as before, aligning events for home and away team towards the time in the center
+printf "$match_details" | column -L -t --separator=';' --table-right 1 
+
