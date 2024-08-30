@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -eu
+
+basename=$(basename "$0")
+
+if ! command -v streamlink > /dev/null ; then
+    printf "$basename depends on streamlink to work, please install it first.\n"
+    exit 1
+fi
+
+if [[ $# -eq 0 ]] || [[ $# -gt 2 ]]; then
+    printf "Usage: $basename \033[1mchannel\033[0m [\0331mquality\033[0m]\n" 1>&2
+    exit 1
+fi
+
+if [[ $1 == "-h" ]]; then
+    printf "Usage: $basename \033[1mchannel\033[0m [\0331mquality\033[0m]\n"
+    exit 0
+fi
+
+streamlink "https://www.twitch.tv/$1" "${2:-best}" --player mpv --twitch-disable-ads
+
