@@ -9,12 +9,12 @@ if ! command -v streamlink > /dev/null ; then
 fi
 
 if [[ $# -eq 0 ]] || [[ $# -gt 2 ]]; then
-    printf "Usage: $basename \033[1mchannel\033[0m [\0331mquality\033[0m]\n" 1>&2
+    printf "Usage: $basename \033[1mchannel\033[0m [\033[1mquality\033[0m]\n" 1>&2
     exit 1
 fi
 
 if [[ $1 == "-h" ]]; then
-    printf "Usage: $basename \033[1mchannel\033[0m [\0331mquality\033[0m]\n"
+    printf "Usage: $basename \033[1mchannel\033[0m [\033[1mquality\033[0m]\n"
     exit 0
 fi
 
