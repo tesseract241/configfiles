@@ -1,14 +1,18 @@
 #!/usr/bin/env bash
+set -eu -o pipefail
+
 basename=$(basename "$0")
-if [[ $1 == "-h" ]]; then
+if [[ $# -gt 0 && $1 == "-h" ]]; then
     echo -e "Usage: $basename [\033[1mCUTOFF\033[0m] [\033[1mDATE\033[0m]" 
     exit 0
 fi
 DATE=""
-if [[ -n $2 ]]; then
-    DATE=$(date --date="$2" +%+4Y%m%d)
+if [[ $# -gt 1 ]]; then
+    count=$(( "$#" - 1 ))
+    human_date="${@:2:$count}"
+    DATE=$(date --date="$human_date" +%+4Y%m%d)
 fi
-CUTOFF=${1:-100}
+CUTOFF=${1:-5}
 curl -sL "https://www.fotmob.com/api/matches?date=$DATE" | jq -r --arg CUTOFF $CUTOFF '
-.leagues | .[] | if ( .primaryId < ( $CUTOFF| tonumber)) then ( "\n" + .ccode + " " + .name , (.matches | .[] | ( .id | tostring ) + ";" + (.home | .name + " " + (.score| tostring) ) + "-" + ( .away | ( .score | tostring) + " " + .name ) + if (.status | .finished) then " FT" else "" end + ";" + (.status | (.utcTime | .[:19] + "Z" | fromdate | strflocaltime("%Y-%m-%d %H:%M")) + ";"))) else empty end' | column -t -L --separator=";" -N "Match ID",Result,Time | GREP_COLORS="mt=1;4;39:sl=1;4;39:cx=39" grep --color=always -A9999 -B9999 "Match ID"
+.leagues | .[0:($CUTOFF|tonumber)] | .[] | "\n" + .ccode + " " + .name , (.matches | .[] | ( .id | tostring ) + ";" + (.home | .name + " " + (.score| tostring) ) + "-" + ( .away | ( .score | tostring) + " " + .name ) + if (.status | .finished) then " FT" else "" end + ";" + (.status | (.utcTime | .[:19] + "Z" | fromdate | strflocaltime("%Y-%m-%d %H:%M")) + ";"))' | column -t -L --separator=";" -N "Match ID",Result,Time | GREP_COLORS="mt=1;4;39:sl=1;4;39:cx=39" grep --color=always -A9999 -B9999 "Match ID"
 
