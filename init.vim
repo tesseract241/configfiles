@@ -7,7 +7,6 @@ call plug#begin('~/.vim/plugged')
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'neovim/nvim-lspconfig'
-"Plug 'jackguo380/vim-lsp-cxx-highlight'
 Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
 Plug 'ms-jpq/coq.thirdparty', {'branch': '3p'}
 Plug 'ms-jpq/coq.artifacts', {'branch': 'artifacts'}
@@ -136,7 +135,6 @@ require('coq_3p'){
      { src = "bc", short_name = "MATH", precision = 6 },
 }
 local on_attach = function(client, bufnr)
-  --vim.cmd('cd build')
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
   local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
 
@@ -168,40 +166,17 @@ for _, lsp in ipairs(servers) do
     root_dir = lspconfig.util.root_pattern('build/compile_commands.json', '.git')
 } 
 end
-  --[[
-lspconfig.ccls.setup {
-  on_attach = on_attach,
-  flags = {
-    debounce_text_changes = 150,
-  },
- root_dir = function(fname) 
-    return vim.fn.getcwd()
-  --root_dir = function(fname) 
-    return vim.fn.getcwd()
-  end,
-     -- function(startpath)
-        local function root_pattern(startpath)
-            lspconfig.util.root_pattern('build', 'subprojects')(startpath)
-        end
-        local me = root_pattern(startpath) or startpath
-        local ancestor = root_pattern(lspconfig.util.path.dirname(me)) or me
-        repeat
-        me = ancestor
-        ancestor = root_pattern(lspconfig.util.path.dirname(me)) or me
-        until ancestor~=me
-    end,--
-  end, 
-  init_options = {
-    compilationDatabaseDirectory = "build",
-    diagnostics = {
-      onChange = 2000,
-    },
-    index = {
-        comments = 0,
-        threads = 0,
-        trackDependency = 1,
-    },
-    },]]--
+lspconfig.pylsp.setup {
+    settings = {
+        pylsp = {
+            plugins = {
+                pycodestyle = {
+                    enabled = false
+                }
+            }
+        }
+    }
+}
 lspconfig.clangd.setup {
     on_attach = on_attach,
     flags = {
@@ -217,6 +192,7 @@ lspconfig.typst_lsp.setup{
         exportPdf = "onSave"
     }
 }
+lspconfig.mesonlsp.setup{}
 EOF
 
 " Initialize registers"
@@ -265,6 +241,9 @@ nnoremap à} ]ù
 nnoremap ù <C-]>
 nnoremap è {
 nnoremap ì }
+
+nnoremap <A-Enter> :call llm#Prompt() <CR>
+runtime llm_config.vim
 
 "autocommands"
 augroup mycommands
