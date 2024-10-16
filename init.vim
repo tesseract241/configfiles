@@ -220,30 +220,10 @@ set updatetime=1000
 set ignorecase smartcase
 set path+=**,/usr/local/include/**,/usr/include/**
 
-"Remaps"
-nnoremap ò( [(
-nnoremap òò [[
-nnoremap òà []
-nnoremap òi [i
-nnoremap òm [m
-nnoremap òp [p
-nnoremap òz [z
-nnoremap òè [{
-nnoremap à) ]à
-nnoremap àI àI 
-nnoremap àò ][
-nnoremap àà ]]
-nnoremap ài ]i
-nnoremap àm ]m
-nnoremap àp ]p
-nnoremap àz ]z
-nnoremap à} ]ù
-nnoremap ù <C-]>
-nnoremap è {
-nnoremap ì }
+runtime locale_keymaps.vim
 
-nnoremap <A-Enter> :call llm#Prompt() <CR>
-runtime llm_config.vim
+nnoremap <A-Enter> :call local_llama#Prompt() <CR>
+runtime local_llama_config.vim
 
 "autocommands"
 augroup mycommands
